@@ -1,2 +1,4 @@
-elements.smoke.color = "#ff0000";
-elements.smoke.behavior = behaviors.air;
+void loop () {
+(elements.smoke.color = "#ff0000");
+(elements.smoke.behavior = behaviors.air);
+}
