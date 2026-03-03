@@ -1,0 +1,14 @@
+elements.fire.reactions = {
+    "water": { "elem1": "smoke", "elem2": null },
+    "ice": { "elem1": "smoke", "elem2": null },
+    // Notice "air" or "oxygen" is missing here, which usually creates smoke
+};
+
+// Also check the behavior to ensure it isn't spawning smoke manually
+elements.fire.behavior = [
+    "XX|CR:fire%5|XX",
+    "XX|XX|XX",
+    "XX|M1|XX",
+];
+
+console.log("No-Smoke Fire mod loaded!");
