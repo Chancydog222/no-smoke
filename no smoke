@@ -1,17 +1,23 @@
 
 setInterval(function() {
-    // 1. Check if smoke exists in the element registry
-    if (elements.smoke) {
-        // 2. Erase its properties and hide it
-        elements.smoke.color = "#00000000";
-        elements.smoke.hidden = true;
-        
-        // 3. Force any existing smoke pixels to disappear
-        elements.smoke.onStep = function(pixel) {
-            deletePixel(pixel.x, pixel.y);
-        };
+    // We don't delete it; we redefine it so the game 
+    // thinks it succeeded in making smoke, but nothing appears.
+    elements.smoke = {
+        color: "#00000000", // Transparent
+        tool: false,        // Remove from menu
+        hidden: true,       // Hide from lists
+        state: "gas",
+        onStep: function(pixel) {
+            deletePixel(pixel.x, pixel.y); // Kill the pixel instantly
+        },
+        excludeRandom: true,
+        noMix: true,
+        movable: false
+    };
 
-        // 4. Remove the reference entirely
-        delete elements.smoke;
+    // Also, clear the 'fire' reaction specifically just in case
+    if (elements.fire && elements.fire.reactions) {
+        delete elements.fire.reactions.oxygen;
+        delete elements.fire.reactions.air;
     }
-}, 100);
+}, 50);
