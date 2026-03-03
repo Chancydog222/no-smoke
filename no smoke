@@ -1,22 +1,17 @@
 
-
-
-
-(function() {
-    // Check if smoke exists before deleting
+setInterval(function() {
+    // 1. Check if smoke exists in the element registry
     if (elements.smoke) {
-        // Delete the base definition
-        delete elements.smoke;
+        // 2. Erase its properties and hide it
+        elements.smoke.color = "#00000000";
+        elements.smoke.hidden = true;
         
-        // Overwrite the smoke key with an empty object 
-        // to catch any dangling reaction references
-        elements.smoke = {
-            hidden: true,
-            onStep: function(pixel) {
-                deletePixel(pixel.x, pixel.y);
-            }
+        // 3. Force any existing smoke pixels to disappear
+        elements.smoke.onStep = function(pixel) {
+            deletePixel(pixel.x, pixel.y);
         };
 
-        console.log("SUCCESS: Smoke has been cleared from existence.");
+        // 4. Remove the reference entirely
+        delete elements.smoke;
     }
-})();
+}, 100);
