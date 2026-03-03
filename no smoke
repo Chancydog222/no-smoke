@@ -1,34 +1,6 @@
 
 
-console.log("No-Smoke Fire mod loaded!");
-// 1. Completely remove the smoke element from the game's registry
-delete elements.smoke;
 
-// 2. Clear any lingering references in the 'gas' category
-if (typeof(elements.smoke) === "undefined") {
-    console.log("Smoke element successfully deleted.");
-}
-
-// 3. Optional: Redirect any reaction that specifically calls for smoke 
-// to prevent potential console errors in older versions
-elements.smoke = {
-    color: "#000000",
-    tool: false, // Hides it from the menu
-    hidden: true,
-    onStep: function(pixel) {
-        changePixel(pixel, "air"); // Instantly turns any smoke into air
-    }
-};
-/*
- * +---------------------------------------+
- * |          NO SMOKE FOREVER             |
- * |      ---------------------------      |
- * |  [ DESCRIPTION ]                       |
- * |  Removes 'smoke' from the game         |
- * |  dictionary and replaces any spawns    |
- * |  with null/air.                        |
- * +---------------------------------------+
- */
 
 (function() {
     // Check if smoke exists before deleting
