@@ -1,15 +1,4 @@
-elements.fire.reactions = {
-    "water": { "elem1": "smoke", "elem2": null },
-    "ice": { "elem1": "smoke", "elem2": null },
-    // Notice "air" or "oxygen" is missing here, which usually creates smoke
-};
 
-// Also check the behavior to ensure it isn't spawning smoke manually
-elements.fire.behavior = [
-    "XX|CR:fire%5|XX",
-    "XX|XX|XX",
-    "XX|M1|XX",
-];
 
 console.log("No-Smoke Fire mod loaded!");
 // 1. Completely remove the smoke element from the game's registry
@@ -30,3 +19,32 @@ elements.smoke = {
         changePixel(pixel, "air"); // Instantly turns any smoke into air
     }
 };
+/*
+ * +---------------------------------------+
+ * |          NO SMOKE FOREVER             |
+ * |      ---------------------------      |
+ * |  [ DESCRIPTION ]                       |
+ * |  Removes 'smoke' from the game         |
+ * |  dictionary and replaces any spawns    |
+ * |  with null/air.                        |
+ * +---------------------------------------+
+ */
+
+(function() {
+    // Check if smoke exists before deleting
+    if (elements.smoke) {
+        // Delete the base definition
+        delete elements.smoke;
+        
+        // Overwrite the smoke key with an empty object 
+        // to catch any dangling reaction references
+        elements.smoke = {
+            hidden: true,
+            onStep: function(pixel) {
+                deletePixel(pixel.x, pixel.y);
+            }
+        };
+
+        console.log("SUCCESS: Smoke has been cleared from existence.");
+    }
+})();
