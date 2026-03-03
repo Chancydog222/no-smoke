@@ -1,37 +1,35 @@
-
-function annihilateSmoke() {
-    // 1. Target the 'smoke' key specifically
-    const target = "smoke";
-
-    // 2. Wipe the element definition if it exists
-    if (elements[target]) {
-        elements[target] = {
-            color: "#00000000",
-            hidden: true,
-            onStep: function(pixel) {
+(function() {
+    // 1. Hijack the element definition to be invisible and non-existent
+    const purgeSmoke = () => {
+        if (elements.smoke) {
+            elements.smoke.color = "#00000000";
+            elements.smoke.hidden = true;
+            elements.smoke.state = "gas";
+            // Any smoke that manages to spawn deletes itself instantly
+            elements.smoke.onStep = function(pixel) {
                 deletePixel(pixel.x, pixel.y);
-            },
-            // Disable all ways it could be created
-            tempHigh: 10000, 
-            state: "gas",
-            excludeRandom: true
-        };
-    }
+            };
+        }
 
-    // 3. Scrub reactions from every other element in the game
-    // This stops fire, explosions, and acids from even trying to make smoke.
-    for (let key in elements) {
-        let el = elements[key];
-        if (el.reactions) {
-            for (let r in el.reactions) {
-                if (el.reactions[r].elem1 === target || el.reactions[r].elem2 === target) {
-                    delete el.reactions[r];
+        // 2. Scan EVERY element for reactions that produce smoke
+        for (let name in elements) {
+            let el = elements[name];
+            if (el.reactions) {
+                for (let r in el.reactions) {
+                    if (el.reactions[r].elem1 === "smoke") { el.reactions[r].elem1 = null; }
+                    if (el.reactions[r].elem2 === "smoke") { el.reactions[r].elem2 = null; }
                 }
             }
+            // 3. Stop elements from "burning" into smoke
+            if (el.burnInto === "smoke") {
+                el.burnInto = null;
+            }
         }
-    }
-}
+    };
 
-// Run it once immediately, then every 20ms
-annihilateSmoke();
-setInterval(annihilateSmoke, 20);
+    // Run the purge every 50ms to catch any late-loading mods
+    setInterval(purgeSmoke, 50);
+    purgeSmoke();
+
+    console.log("Smoke logic has been purged from the engine registry.");
+})();
