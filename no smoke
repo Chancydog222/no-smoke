@@ -1,23 +1,37 @@
 
-setInterval(function() {
-    // We don't delete it; we redefine it so the game 
-    // thinks it succeeded in making smoke, but nothing appears.
-    elements.smoke = {
-        color: "#00000000", // Transparent
-        tool: false,        // Remove from menu
-        hidden: true,       // Hide from lists
-        state: "gas",
-        onStep: function(pixel) {
-            deletePixel(pixel.x, pixel.y); // Kill the pixel instantly
-        },
-        excludeRandom: true,
-        noMix: true,
-        movable: false
-    };
+function annihilateSmoke() {
+    // 1. Target the 'smoke' key specifically
+    const target = "smoke";
 
-    // Also, clear the 'fire' reaction specifically just in case
-    if (elements.fire && elements.fire.reactions) {
-        delete elements.fire.reactions.oxygen;
-        delete elements.fire.reactions.air;
+    // 2. Wipe the element definition if it exists
+    if (elements[target]) {
+        elements[target] = {
+            color: "#00000000",
+            hidden: true,
+            onStep: function(pixel) {
+                deletePixel(pixel.x, pixel.y);
+            },
+            // Disable all ways it could be created
+            tempHigh: 10000, 
+            state: "gas",
+            excludeRandom: true
+        };
     }
-}, 50);
+
+    // 3. Scrub reactions from every other element in the game
+    // This stops fire, explosions, and acids from even trying to make smoke.
+    for (let key in elements) {
+        let el = elements[key];
+        if (el.reactions) {
+            for (let r in el.reactions) {
+                if (el.reactions[r].elem1 === target || el.reactions[r].elem2 === target) {
+                    delete el.reactions[r];
+                }
+            }
+        }
+    }
+}
+
+// Run it once immediately, then every 20ms
+annihilateSmoke();
+setInterval(annihilateSmoke, 20);
